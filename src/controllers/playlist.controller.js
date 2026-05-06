@@ -10,7 +10,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
   //TODO: create playlist
 
-  if ([name, description].some((field) => field?.trim() === "")) {
+  if ([name, description].some((field) => !field || field?.trim() === "")) {
     throw new ApiError(400, "Name and Description both are required");
   }
 
@@ -18,7 +18,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
     name: name.trim(),
     description: description.trim(),
     videos: [],
-    owner: req.user?._id,
+    owner: req.user._id,
   });
 
   if (!playlist) {
@@ -123,7 +123,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
               $or: [
                 { isPublished: true },
                 {
-                  owner: new mongoose.Types.ObjectId(req.user?._id),
+                  owner: new mongoose.Types.ObjectId(req.user._id),
                 },
               ],
             },
@@ -207,6 +207,10 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     },
   ]);
 
+  if (!playlist.length) {
+    throw new ApiError(404, "Playlist not found");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, playlist[0], "Playlist fetched successfully"));
@@ -276,6 +280,45 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
   // TODO: remove video from playlist
+
+  if (!isValidObjectId(playlistId)) {
+    throw new ApiError(400, "Invalid playlist id");
+  }
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
+  }
+
+  const updatedPlaylist = await Playlist.findOneAndUpdate(
+    {
+      _id: playlistId,
+      owner: req.user._id,
+      videos: videoId,
+    },
+    {
+      $pull: { videos: videoId },
+    },
+    {
+      new: true,
+    }
+  ).select("_id name videos");
+
+  if (!updatedPlaylist) {
+    throw new ApiError(
+      404,
+      "Playlist not found, unauthorized access, or video not present in playlist"
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedPlaylist,
+        "Video removed from the playlist successfully"
+      )
+    );
 });
 
 const deletePlaylist = asyncHandler(async (req, res) => {
@@ -285,19 +328,19 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid playlist id");
   }
 
-  const deletePlaylist = await Playlist.findOneAndDelete({
+  const deletedPlaylist = await Playlist.findOneAndDelete({
     _id: playlistId,
-    owner: req.user?._id,
+    owner: req.user._id,
   });
 
-  if (!deletePlaylist) {
+  if (!deletedPlaylist) {
     throw new ApiError(404, "Playlist not found or access denied");
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { deletePlaylist }, "Playlist deleted successfully")
+      new ApiResponse(200, { deletedPlaylist }, "Playlist deleted successfully")
     );
 });
 
@@ -310,18 +353,21 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid playlist id");
   }
 
-  if ([name, description].some((field) => field?.trim() === "")) {
+  if ([name, description].some((field) => !field || field?.trim() === "")) {
     throw new ApiError(400, "Name and Description both are required");
   }
 
   const updatedPlaylist = await Playlist.findOneAndUpdate(
     {
       _id: playlistId,
-      owner: req.user?._id,
+      owner: req.user._id,
     },
     {
       name: name.trim(),
       description: description.trim(),
+    },
+    {
+      new: true,
     }
   );
 
