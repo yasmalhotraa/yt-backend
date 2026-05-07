@@ -66,6 +66,168 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: get video by id
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid Video id");
+  }
+
+  const pipeline = [];
+
+  // get video matching id and isPublished
+  pipeline.push({
+    $match: {
+      _id: new mongoose.Types.ObjectId(videoId),
+      isPublished: true,
+    },
+  });
+
+  // get isLiked and total likes on video
+  pipeline.push(
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "video",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likesCount: {
+          $size: "$likes",
+        },
+        isLiked: {
+          $in: [new mongoose.Types.ObjectId(req.user._id), "$likes.likedBy"],
+        },
+      },
+    }
+  );
+
+  // get comments with comments info
+  pipeline.push({
+    $lookup: {
+      from: "comments",
+      localField: "_id",
+      foreignField: "video",
+      as: "comments",
+      pipeline: [
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "owner",
+          },
+        },
+        {
+          $unwind: "$owner",
+        },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "_id",
+            foreignField: "comment",
+            as: "likes",
+          },
+        },
+        {
+          $addFields: {
+            likesCount: { $size: "$likes" },
+            isLiked: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user._id),
+                "$likes.likedBy",
+              ],
+            },
+          },
+        },
+        {
+          $project: {
+            "owner.username": 1,
+            "owner.avatar.url": 1,
+            likesCount: 1,
+            isLiked: 1,
+            content: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      ],
+    },
+  });
+
+  // get owner info
+  pipeline.push(
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    { $unwind: "$owner" },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "owner._id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      $addFields: {
+        "owner.subscribersCount": {
+          $size: "$subscribers",
+        },
+        "owner.isSubscribed": {
+          $in: [
+            new mongoose.Types.ObjectId(req.user._id),
+            "$subscribers.subscriber",
+          ],
+        },
+      },
+    }
+  );
+
+  // Projection
+  pipeline.push({
+    $project: {
+      "videoFile.public_id": 0,
+      "thumbnail.public_id": 0,
+      likes: 0,
+      subscribers: 0,
+      "owner.password": 0,
+      "owner.refreshToken": 0,
+      "owner.email": 0,
+      "owner.watchHistory": 0,
+      "owner.createdAt": 0,
+      "owner.updatedAt": 0,
+      "owner.__v": 0,
+      "owner.username": 0,
+      "owner.coverImage": 0,
+      "owner.avatar.public_id": 0,
+    },
+  });
+
+  const video = await Video.aggregate(pipeline);
+
+  if (!video || video.length === 0) {
+    throw new ApiError(404, "Video doesn't exist");
+  }
+
+  // to increase views on video
+  await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } }, { new: true });
+
+  // add to current user watch watchHistory
+  await User.findByIdAndUpdate(req.user._id, {
+    $addToSet: { watchHistory: videoId },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video[0], "Video fetched successfully"));
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
