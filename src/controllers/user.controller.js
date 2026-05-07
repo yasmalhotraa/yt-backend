@@ -473,8 +473,8 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         subscribersCount: 1,
         channelsSubscribedToCount: 1,
         isSubscribed: 1,
-        avatar: 1,
-        coverImage: 1,
+        "avatar.url": 1,
+        "coverImage.url": 1,
         email: 1,
       },
     },
@@ -516,7 +516,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                   $project: {
                     fullName: 1,
                     username: 1,
-                    avatar: 1,
+                    "avatar.url": 1,
                   },
                 },
               ],
@@ -527,6 +527,12 @@ const getWatchHistory = asyncHandler(async (req, res) => {
               owner: {
                 $first: "$owner",
               },
+            },
+          },
+          {
+            $project: {
+              "videoFile.public_id": 0,
+              "thumbnail.public_id": 0,
             },
           },
         ],
