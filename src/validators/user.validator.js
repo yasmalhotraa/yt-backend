@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const validRegisterSchema = z.object({
+const RegisterSchema = z.object({
   fullName: z
     .string({ error: "Full name is required" })
     .trim()
@@ -27,7 +27,7 @@ const validRegisterSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
-const validLoginSchema = z
+const LoginSchema = z
   .object({
     email: z.string().trim().email("Please provide a valid email").optional(),
 
@@ -47,7 +47,7 @@ const validLoginSchema = z
     message: "Please provide either username or email",
   });
 
-const validChangePassSchema = z.object({
+const ChangePassSchema = z.object({
   oldPassword: z
     .string({
       error: "Old password is required",
@@ -61,7 +61,7 @@ const validChangePassSchema = z.object({
     .min(6, "New password must be at least 6 characters"),
 });
 
-const validUpdateAccountSchema = z
+const UpdateAccountSchema = z
   .object({
     fullName: z
       .string({
@@ -83,9 +83,4 @@ const validUpdateAccountSchema = z
     message: "At least one field is required to update account",
   });
 
-export {
-  validRegisterSchema,
-  validLoginSchema,
-  validChangePassSchema,
-  validUpdateAccountSchema,
-};
+export { RegisterSchema, LoginSchema, ChangePassSchema, UpdateAccountSchema };

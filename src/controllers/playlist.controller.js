@@ -16,8 +16,8 @@ const createPlaylist = asyncHandler(async (req, res) => {
   // }
 
   const playlist = await Playlist.create({
-    name: name.trim(),
-    description: description.trim(),
+    name: name,
+    description: description,
     videos: [],
     owner: req.user._id,
   });
@@ -365,8 +365,8 @@ const updatePlaylist = asyncHandler(async (req, res) => {
       owner: req.user._id,
     },
     {
-      name: name.trim(),
-      description: description.trim(),
+      name: name,
+      description: description,
     },
     {
       new: true,

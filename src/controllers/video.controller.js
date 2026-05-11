@@ -169,9 +169,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
   // TODO: get video, upload to cloudinary, create video
 
-  if ([title, description].some((field) => field.trim() === "")) {
-    throw new ApiError(400, "Title and description are required");
-  }
+  // validation (used before implementing zod)
+  // if ([title, description].some((field) => field.trim() === "")) {
+  //   throw new ApiError(400, "Title and description are required");
+  // }
 
   const videoFileLocalPath = req.files?.videoFile?.[0]?.path;
   const thumbnailLocalPath = req.files?.thumbnail?.[0].path;
@@ -388,9 +389,10 @@ const updateVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid Video Id");
   }
 
-  if ([title, description].some((field) => field.trim() === "")) {
-    throw new ApiError(400, "Title and Description are required");
-  }
+  // validation (used before implementing zod)
+  // if ([title, description].some((field) => field.trim() === "")) {
+  //   throw new ApiError(400, "Title and Description are required");
+  // }
 
   const thumbnailLocalPath = req.file?.path;
 
@@ -422,8 +424,8 @@ const updateVideo = asyncHandler(async (req, res) => {
     },
     {
       $set: {
-        title: title.trim(),
-        description: description.trim(),
+        title: title,
+        description: description,
         thumbnail: {
           url: thumbnail.url,
           public_id: thumbnail.public_id,

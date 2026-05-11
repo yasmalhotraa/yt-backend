@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { validate } from "../middlewares/validate.middleware.js";
+import { videoBodySchema } from "../validators/video.validator.js";
 import {
   deleteVideo,
   getAllVideos,
@@ -27,6 +29,7 @@ router
         maxCount: 1,
       },
     ]),
+    validate(videoBodySchema),
     publishAVideo
   );
 
@@ -34,7 +37,7 @@ router
   .route("/:videoId")
   .get(getVideoById)
   .delete(deleteVideo)
-  .patch(upload.single("thumbnail"), updateVideo);
+  .patch(upload.single("thumbnail"), validate(videoBodySchema), updateVideo);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 
