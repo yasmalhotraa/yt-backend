@@ -1,4 +1,11 @@
 import { Router } from "express";
+import { validate } from "../middlewares/validate.middleware.js";
+import {
+  validRegisterSchema,
+  validLoginSchema,
+  validChangePassSchema,
+  validUpdateAccountSchema,
+} from "../validators/user.validator.js";
 import {
   changeCurrentPassword,
   getCurrentUser,
@@ -21,10 +28,11 @@ router.route("/register").post(
     { name: "avatar", maxCount: 1 },
     { name: "coverImage", maxCount: 1 },
   ]),
+  validate(validRegisterSchema),
   registerUser
 );
 
-router.route("/login").post(loginUser);
+router.route("/login").post(validate(validLoginSchema), loginUser);
 
 // Secured Routes
 router.route("/logout").post(verifyJWT, logoutUser);
@@ -32,9 +40,13 @@ router.route("/refresh-token").post(refreshAccessToken);
 
 router.route("/me").get(verifyJWT, getCurrentUser);
 
-router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+router
+  .route("/change-password")
+  .post(verifyJWT, validate(validChangePassSchema), changeCurrentPassword);
 
-router.route("/update-account").patch(verifyJWT, updateAccountDetails);
+router
+  .route("/update-account")
+  .patch(verifyJWT, validate(validUpdateAccountSchema), updateAccountDetails);
 
 router
   .route("/update-avatar")

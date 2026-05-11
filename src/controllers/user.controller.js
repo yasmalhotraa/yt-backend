@@ -37,12 +37,12 @@ const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
   console.log("email: ", email);
 
-  // validation
-  if (
-    [fullName, email, password, username].some((field) => field?.trim() === "")
-  ) {
-    throw new ApiError(400, "All fields are required");
-  }
+  // validation (used before implementing zod)
+  // if (
+  //   [fullName, email, password, username].some((field) => field?.trim() === "")
+  // ) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
 
   // check if user already exists: username, email
   const existedUser = await User.findOne({
@@ -107,12 +107,13 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   // req body -> data
   const { email, username, password } = req.body;
-  console.log(email);
+  console.log("user login email is ", email);
+  console.log("user login username is ", username);
 
-  // username or email
-  if (!username && !email) {
-    throw new ApiError(400, "username or email is required");
-  }
+  // username or email validation (used before implementing zod)
+  // if (!username && !email) {
+  //   throw new ApiError(400, "username or email is required");
+  // }
 
   // Here is an alternative of above code based on logic :
   // if (!(username || email)) {
@@ -276,9 +277,10 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
 
-  if (!fullName || !email) {
-    throw new ApiError(400, "All fields are required");
-  }
+  // validation (used before implementing zod)
+  // if (!fullName || !email) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,

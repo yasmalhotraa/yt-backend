@@ -1,31 +1,24 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
-import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { Like } from "../models/like.model.js";
 
 const createTweet = asyncHandler(async (req, res) => {
   //TODO: create tweet
   // get content from frontend
   const { content } = req.body;
 
-  // validate
-  if (!content || content.trim() === "") {
-    throw new ApiError(400, "Content is required");
-  }
-
-  // get current user using id
-  const userId = await User.findById(req.user?._id).select("_id");
-
-  if (!userId) {
-    throw new ApiError(400, "User not found, please login first");
-  }
+  // validation (used before implementing zod)
+  // if (!content || content.trim() === "") {
+  //   throw new ApiError(400, "Content is required");
+  // }
 
   // create tweet
   const tweet = await Tweet.create({
     content,
-    owner: userId,
+    owner: req.user._id,
   });
 
   if (!tweet) {
@@ -41,8 +34,6 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
   // TODO: get user tweets
   const { userId } = req.params;
-
-  console.log(userId);
 
   if (!isValidObjectId(userId)) {
     throw new ApiError(400, "User not found");
@@ -80,15 +71,13 @@ const getUserTweets = asyncHandler(async (req, res) => {
         content: 1,
         "owner.username": 1,
         "owner.fullName": 1,
-        "owner.avatar": 1,
-        "owner.coverImage": 1,
+        "owner.avatar.url": 1,
+        "owner.coverImage.url": 1,
       },
     },
   ]);
 
-  console.log(tweets);
-
-  if (!tweets) {
+  if (!tweets || tweets.length === 0) {
     throw new ApiError(400, "No tweets found under this user");
   }
 
@@ -102,20 +91,19 @@ const updateTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
   const { tweetId } = req.params;
 
-  console.log(tweetId);
-
-  if (!content || content.trim() === "") {
-    throw new ApiError(400, "Content is required to update the tweet");
-  }
+  // validation (used before implementing zod)
+  // if (!content || content.trim() === "") {
+  //   throw new ApiError(400, "Content is required to update the tweet");
+  // }
 
   if (!isValidObjectId(tweetId)) {
     throw new ApiError(400, "tweet id is invalid");
   }
 
-  const updatedTweet = await Tweet.findByIdAndUpdate(
+  const updatedTweet = await Tweet.findOneAndUpdate(
     {
       _id: tweetId,
-      owner: req.user?._id,
+      owner: req.user._id,
     },
     {
       content,
@@ -126,7 +114,10 @@ const updateTweet = asyncHandler(async (req, res) => {
   );
 
   if (!updatedTweet) {
-    throw new ApiError(500, "Something went wrong while updating the tweet");
+    throw new ApiError(
+      404,
+      "Tweet not found or you are not authorized to update it"
+    );
   }
 
   res
@@ -142,16 +133,14 @@ const deleteTweet = asyncHandler(async (req, res) => {
     throw new ApiError(400, "tweet id is invalid");
   }
 
-  const deletedTweet = await Tweet.deleteOne({
+  const deletedTweet = await Tweet.findOneAndDelete({
     _id: tweetId,
-    owner: req.user?._id,
+    owner: req.user._id,
   });
 
-  console.log(deletedTweet);
-
-  if (deletedTweet.deletedCount < 1) {
+  if (!deletedTweet) {
     throw new ApiError(
-      400,
+      404,
       "Tweet not found or you are not authorized to delete it"
     );
   }
@@ -163,7 +152,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(204, deletedTweet, "Tweet deleted successfully"));
+    .json(new ApiResponse(200, deletedTweet, "Tweet deleted successfully"));
 });
 
 export { createTweet, getUserTweets, updateTweet, deleteTweet };
