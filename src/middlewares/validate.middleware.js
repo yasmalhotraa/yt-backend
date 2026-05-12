@@ -43,6 +43,7 @@ const validate = ({
     // validate query
     if (querySchema) {
       const result = querySchema.safeParse(req.query);
+      console.log("result data object values", result.data);
 
       if (!result.success) {
         validationErrors.push(
@@ -52,7 +53,8 @@ const validate = ({
           }))
         );
       } else {
-        Object.assign(req.query, result.data);
+        req.validatedQuery = result.data;
+        console.log("query request object values", req.validatedQuery);
       }
     }
 

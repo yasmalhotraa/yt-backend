@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Video } from "../models/video.model.js";
 import { Like } from "../models/like.model.js";
 import { Comment } from "../models/comment.model.js";
@@ -12,32 +12,23 @@ import {
 } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  const {
-    page = 1,
-    limit = 10,
-    query,
-    sortBy = "createdAt",
-    sortType = "desc",
-    userId,
-  } = req.query;
+  const { page, limit, query, sortBy, sortType, userId } = req.validatedQuery;
   //TODO: get all videos based on query, sort, pagination
 
-  const pageNum = Math.max(1, parseInt(page, 10) || 1);
-  const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 10));
-  const skipVids = (pageNum - 1) * limitNum;
+  // validation (used before implementing zod)
+  // const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  // const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 10));
+  const skipVids = (page - 1) * limit;
 
   // creating match object
   const match = { isPublished: true };
 
   if (userId) {
-    if (!isValidObjectId(userId)) {
-      throw new ApiError(400, "Invalid user id");
-    }
     match.owner = new mongoose.Types.ObjectId(userId);
   }
 
-  if (query && query.trim() !== "") {
-    const q = query.trim();
+  if (query) {
+    const q = query;
     match.$or = [
       {
         title: {
@@ -54,7 +45,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     ];
   }
 
-  const sortOrder = String(sortType).toLowerCase() === "asc" ? 1 : -1;
+  const sortOrder = sortType.toLowerCase() === "asc" ? 1 : -1;
   const sortObj = { [sortBy]: sortOrder };
 
   const pipelineCount = [];
@@ -63,7 +54,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
   const countRes = await Video.aggregate(pipelineCount);
   const totalVideos = countRes[0]?.total || 0;
-  const totalPages = Math.ceil(totalVideos / limitNum);
+  const totalPages = Math.ceil(totalVideos / limit);
 
   // main aggregation pipeline
   const pipeline = [];
@@ -72,7 +63,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
   pipeline.push({ $match: match });
 
   // Sort, skip and limit
-  pipeline.push({ $sort: sortObj }, { $skip: skipVids }, { $limit: limitNum });
+  pipeline.push({ $sort: sortObj }, { $skip: skipVids }, { $limit: limit });
 
   // lookup for owner info
   pipeline.push({
@@ -152,12 +143,12 @@ const getAllVideos = asyncHandler(async (req, res) => {
       {
         videos,
         pagination: {
-          page: pageNum,
-          limit: limitNum,
+          page,
+          limit,
           totalVideos,
           totalPages,
-          hasNextPage: pageNum < totalPages,
-          hasPrevPage: pageNum > 1,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
         },
       },
       "Videos fetched successfully"

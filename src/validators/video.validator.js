@@ -17,4 +17,18 @@ const videoIdParamSchema = z.object({
   videoId: objectIdSchema,
 });
 
-export { videoBodySchema, videoIdParamSchema };
+const getAllVideosQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+
+  query: z.string().trim().optional(),
+
+  sortBy: z.enum(["createdAt", "views", "title"]).default("createdAt"),
+
+  sortType: z.enum(["asc", "desc"]).default("desc"),
+
+  userId: objectIdSchema.optional(),
+});
+
+export { videoBodySchema, videoIdParamSchema, getAllVideosQuerySchema };

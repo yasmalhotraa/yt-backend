@@ -9,7 +9,7 @@ import { Like } from "../models/like.model.js";
 const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.validatedQuery;
 
   // validation (used before implementing zod)
   // if (!isValidObjectId(videoId)) {

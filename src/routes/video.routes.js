@@ -3,6 +3,7 @@ import { validate } from "../middlewares/validate.middleware.js";
 import {
   videoBodySchema,
   videoIdParamSchema,
+  getAllVideosQuerySchema,
 } from "../validators/video.validator.js";
 import {
   deleteVideo,
@@ -20,7 +21,7 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
   .route("/")
-  .get(getAllVideos)
+  .get(validate({ query: getAllVideosQuerySchema }), getAllVideos)
   .post(
     upload.fields([
       {

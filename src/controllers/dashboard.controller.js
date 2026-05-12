@@ -172,14 +172,15 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   // TODO: Get all the videos uploaded by the channel
 
   const userId = new mongoose.Types.ObjectId(req.user._id);
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.validatedQuery;
 
-  if (!page || isNaN(parseInt(page))) {
-    throw new ApiError(400, "Please provide a valid page number");
-  }
-  if (!limit || isNaN(parseInt(limit))) {
-    throw new ApiError(400, "Please provide a valid limit number");
-  }
+  // validation (used before implementing zod)
+  // if (!page || isNaN(parseInt(page))) {
+  //   throw new ApiError(400, "Please provide a valid page number");
+  // }
+  // if (!limit || isNaN(parseInt(limit))) {
+  //   throw new ApiError(400, "Please provide a valid limit number");
+  // }
 
   const videos = Video.aggregate([
     {
@@ -199,8 +200,8 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   ]);
 
   const options = {
-    page: parseInt(page),
-    limit: parseInt(limit),
+    page: page,
+    limit: limit,
   };
 
   const result = await Video.aggregatePaginate(videos, options);
