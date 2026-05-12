@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -35,9 +35,10 @@ const getUserTweets = asyncHandler(async (req, res) => {
   // TODO: get user tweets
   const { userId } = req.params;
 
-  if (!isValidObjectId(userId)) {
-    throw new ApiError(400, "User not found");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(userId)) {
+  //   throw new ApiError(400, "User not found");
+  // }
 
   const tweets = await Tweet.aggregate([
     {
@@ -96,9 +97,10 @@ const updateTweet = asyncHandler(async (req, res) => {
   //   throw new ApiError(400, "Content is required to update the tweet");
   // }
 
-  if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "tweet id is invalid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(tweetId)) {
+  //   throw new ApiError(400, "tweet id is invalid");
+  // }
 
   const updatedTweet = await Tweet.findOneAndUpdate(
     {
@@ -129,9 +131,10 @@ const deleteTweet = asyncHandler(async (req, res) => {
   //TODO: delete tweet
   const { tweetId } = req.params;
 
-  if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "tweet id is invalid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(tweetId)) {
+  //   throw new ApiError(400, "tweet id is invalid");
+  // }
 
   const deletedTweet = await Tweet.findOneAndDelete({
     _id: tweetId,

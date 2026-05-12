@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { objectIdSchema } from "./objectId.validator.js";
 
 const playlistBodySchema = z.object({
   name: z
@@ -13,4 +14,22 @@ const playlistBodySchema = z.object({
     .max(300, "Description should be not more than 300 characters "),
 });
 
-export { playlistBodySchema };
+const playlistIdParamSchema = z.object({
+  playlistId: objectIdSchema,
+});
+
+const userIdParamSchema = z.object({
+  userId: objectIdSchema,
+});
+
+const playlistVideoParamSchema = z.object({
+  playlistId: objectIdSchema,
+  videoId: objectIdSchema,
+});
+
+export {
+  playlistBodySchema,
+  playlistIdParamSchema,
+  userIdParamSchema,
+  playlistVideoParamSchema,
+};

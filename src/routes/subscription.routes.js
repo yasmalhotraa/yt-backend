@@ -1,4 +1,9 @@
 import { Router } from "express";
+import { validate } from "../middlewares/validate.middleware.js";
+import {
+  channelIdParamSchema,
+  subscriberIdParamSchema,
+} from "../validators/subscription.validator.js";
 import {
   getSubscribedChannels,
   getUserChannelSubscribers,
@@ -11,9 +16,11 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
   .route("/c/:channelId")
-  .get(getUserChannelSubscribers)
-  .post(toggleSubscription);
+  .get(validate({ params: channelIdParamSchema }), getUserChannelSubscribers)
+  .post(validate({ params: channelIdParamSchema }), toggleSubscription);
 
-router.route("/u/:subscriberId").get(getSubscribedChannels);
+router
+  .route("/u/:subscriberId")
+  .get(validate({ params: subscriberIdParamSchema }), getSubscribedChannels);
 
 export default router;

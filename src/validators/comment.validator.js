@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { objectIdSchema } from "./objectId.validator.js";
 
 const commentBodySchema = z.object({
   content: z
@@ -7,4 +8,8 @@ const commentBodySchema = z.object({
     .min(1, "Content is required"),
 });
 
-export { commentBodySchema };
+const commentIdParamSchema = z.object({
+  commentId: objectIdSchema,
+});
+
+export { commentBodySchema, commentIdParamSchema };

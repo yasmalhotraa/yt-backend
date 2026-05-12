@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Playlist } from "../models/playlist.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -38,9 +38,10 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   //TODO: get user playlists
 
-  if (!isValidObjectId(userId)) {
-    throw new ApiError(400, "Invalid user Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(userId)) {
+  //   throw new ApiError(400, "Invalid user Id");
+  // }
 
   const playlists = await Playlist.aggregate([
     {
@@ -104,9 +105,10 @@ const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   //TODO: get playlist by id
 
-  if (!isValidObjectId(playlistId)) {
-    throw new ApiError(400, "Invalid Playlist Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(playlistId)) {
+  //   throw new ApiError(400, "Invalid Playlist Id");
+  // }
 
   const playlist = await Playlist.aggregate([
     {
@@ -220,13 +222,14 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
-  if (!isValidObjectId(playlistId)) {
-    throw new ApiError(400, "Invalid Playlist Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(playlistId)) {
+  //   throw new ApiError(400, "Invalid Playlist Id");
+  // }
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid Video Id");
-  }
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid Video Id");
+  // }
 
   const [playlist, video] = await Promise.all([
     Playlist.findById(playlistId),
@@ -282,13 +285,14 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
   // TODO: remove video from playlist
 
-  if (!isValidObjectId(playlistId)) {
-    throw new ApiError(400, "Invalid playlist id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(playlistId)) {
+  //   throw new ApiError(400, "Invalid playlist id");
+  // }
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid video id");
-  }
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid video id");
+  // }
 
   const updatedPlaylist = await Playlist.findOneAndUpdate(
     {
@@ -325,9 +329,11 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   // TODO: delete playlist
-  if (!isValidObjectId(playlistId)) {
-    throw new ApiError(400, "Invalid playlist id");
-  }
+
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(playlistId)) {
+  //   throw new ApiError(400, "Invalid playlist id");
+  // }
 
   const deletedPlaylist = await Playlist.findOneAndDelete({
     _id: playlistId,
@@ -350,9 +356,10 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
   //TODO: update playlist
 
-  if (!isValidObjectId(playlistId)) {
-    throw new ApiError(400, "Invalid playlist id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(playlistId)) {
+  //   throw new ApiError(400, "Invalid playlist id");
+  // }
 
   // validation (used before implementing zod)
   // if ([name, description].some((field) => !field || field?.trim() === "")) {

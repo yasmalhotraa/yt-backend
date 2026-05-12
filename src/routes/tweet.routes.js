@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.middleware.js";
-import { tweetContentSchema } from "../validators/tweet.validator.js";
+import {
+  tweetContentSchema,
+  tweetIdParamSchema,
+  userIdParamSchema,
+} from "../validators/tweet.validator.js";
 import {
   createTweet,
   deleteTweet,
@@ -13,10 +17,15 @@ const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router.route("/").post(validate({ body: tweetContentSchema }), createTweet);
-router.route("/user/:userId").get(getUserTweets);
+router
+  .route("/user/:userId")
+  .get(validate({ params: userIdParamSchema }), getUserTweets);
 router
   .route("/:tweetId")
-  .patch(validate({ body: tweetContentSchema }), updateTweet)
-  .delete(deleteTweet);
+  .patch(
+    validate({ body: tweetContentSchema, params: tweetIdParamSchema }),
+    updateTweet
+  )
+  .delete(validate({ params: tweetIdParamSchema }), deleteTweet);
 
 export default router;

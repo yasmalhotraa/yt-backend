@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.middleware.js";
-import { commentBodySchema } from "../validators/comment.validator.js";
+import {
+  commentBodySchema,
+  commentIdParamSchema,
+} from "../validators/comment.validator.js";
+import { videoIdParamSchema } from "../validators/video.validator.js";
 import {
   addComment,
   deleteComment,
@@ -15,11 +19,17 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
   .route("/:videoId")
-  .get(getVideoComments)
-  .post(validate({ body: commentBodySchema }), addComment);
+  .get(validate({ params: videoIdParamSchema }), getVideoComments)
+  .post(
+    validate({ body: commentBodySchema, params: videoIdParamSchema }),
+    addComment
+  );
 router
   .route("/c/:commentId")
-  .delete(deleteComment)
-  .patch(validate({ body: commentBodySchema }), updateComment);
+  .delete(validate({ params: commentIdParamSchema }), deleteComment)
+  .patch(
+    validate({ body: commentBodySchema, params: commentIdParamSchema }),
+    updateComment
+  );
 
 export default router;

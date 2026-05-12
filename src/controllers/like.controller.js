@@ -1,4 +1,3 @@
-import mongoose, { isValidObjectId } from "mongoose";
 import { Like } from "../models/like.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -10,9 +9,11 @@ import { Tweet } from "../models/tweet.model.js";
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: toggle like on video
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Video id is not valid");
-  }
+
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Video id is not valid");
+  // }
 
   const video = await Video.findById(videoId);
   if (!video) {
@@ -46,9 +47,10 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
   //TODO: toggle like on comment
 
-  if (!isValidObjectId(commentId)) {
-    throw new ApiError(400, "Comment Id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(commentId)) {
+  //   throw new ApiError(400, "Comment Id is not valid");
+  // }
 
   const comment = await Comment.findById(commentId);
   if (!comment) {
@@ -84,9 +86,10 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
   //TODO: toggle like on tweet
 
-  if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "Tweet id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(tweetId)) {
+  //   throw new ApiError(400, "Tweet id is not valid");
+  // }
 
   const tweet = await Tweet.findById(tweetId);
   if (!tweet) {

@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.middleware.js";
-import { playlistBodySchema } from "../validators/playlist.validator.js";
+import {
+  playlistBodySchema,
+  playlistIdParamSchema,
+  userIdParamSchema,
+  playlistVideoParamSchema,
+} from "../validators/playlist.validator.js";
 import {
   addVideoToPlaylist,
   createPlaylist,
@@ -20,13 +25,25 @@ router.route("/").post(validate({ body: playlistBodySchema }), createPlaylist);
 
 router
   .route("/:playlistId")
-  .get(getPlaylistById)
-  .patch(validate({ body: playlistBodySchema }), updatePlaylist)
-  .delete(deletePlaylist);
+  .get(validate({ params: playlistIdParamSchema }), getPlaylistById)
+  .patch(
+    validate({ body: playlistBodySchema, params: playlistIdParamSchema }),
+    updatePlaylist
+  )
+  .delete(validate({ params: playlistIdParamSchema }), deletePlaylist);
 
-router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
-router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
+router
+  .route("/add/:videoId/:playlistId")
+  .patch(validate({ params: playlistVideoParamSchema }), addVideoToPlaylist);
+router
+  .route("/remove/:videoId/:playlistId")
+  .patch(
+    validate({ params: playlistVideoParamSchema }),
+    removeVideoFromPlaylist
+  );
 
-router.route("/user/:userId").get(getUserPlaylists);
+router
+  .route("/user/:userId")
+  .get(validate({ params: userIdParamSchema }), getUserPlaylists);
 
 export default router;

@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -9,9 +9,10 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   // TODO: toggle subscription
 
-  if (!isValidObjectId(channelId)) {
-    throw new ApiError(400, "Please provide a valid channelId");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(channelId)) {
+  //   throw new ApiError(400, "Please provide a valid channelId");
+  // }
 
   const subscriptionStatus = await Subscription.deleteOne({
     subscriber: req.user?._id,
@@ -46,9 +47,10 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
 
-  if (!isValidObjectId(channelId)) {
-    throw new ApiError(400, "Please provide a valid channel Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(channelId)) {
+  //   throw new ApiError(400, "Please provide a valid channel Id");
+  // }
 
   // const subscribers = await Subscription.find({ channel: channelId });
 
@@ -139,9 +141,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
 
-  if (!isValidObjectId(subscriberId)) {
-    throw new ApiError(400, "Subscriber id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(subscriberId)) {
+  //   throw new ApiError(400, "Subscriber id is not valid");
+  // }
 
   const channels = await Subscription.aggregate([
     {

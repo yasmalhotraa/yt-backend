@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { objectIdSchema } from "./objectId.validator.js";
 
 const tweetContentSchema = z.object({
   content: z
@@ -8,4 +9,12 @@ const tweetContentSchema = z.object({
     .max(300, "Content should not be more than 300 characters"),
 });
 
-export { tweetContentSchema };
+const tweetIdParamSchema = z.object({
+  tweetId: objectIdSchema,
+});
+
+const userIdParamSchema = z.object({
+  userId: objectIdSchema,
+});
+
+export { tweetContentSchema, tweetIdParamSchema, userIdParamSchema };

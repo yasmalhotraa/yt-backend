@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Comment } from "../models/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -11,9 +11,10 @@ const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid video id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid video id");
+  // }
 
   if (isNaN(parseInt(page)) || isNaN(parseInt(limit))) {
     throw new ApiError(400, "please provide a valid and page and limit");
@@ -92,9 +93,10 @@ const addComment = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { content } = req.body;
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Video id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Video id is not valid");
+  // }
 
   // validation (used before implementing zod)
   // if (!content || content.trim() === "") {
@@ -126,9 +128,10 @@ const updateComment = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
   const { content } = req.body;
 
-  if (!isValidObjectId(commentId)) {
-    throw new ApiError(400, "Comment id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(commentId)) {
+  //   throw new ApiError(400, "Comment id is not valid");
+  // }
 
   // validation (used before implementing zod)
   // if (!content || content.trim() === "") {
@@ -162,9 +165,10 @@ const deleteComment = asyncHandler(async (req, res) => {
   // TODO: delete a comment
   const { commentId } = req.params;
 
-  if (!isValidObjectId(commentId)) {
-    throw new ApiError(400, "Comment id is not valid");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(commentId)) {
+  //   throw new ApiError(400, "Comment id is not valid");
+  // }
 
   const deleteResponse = await Comment.findOneAndDelete({
     _id: commentId,
