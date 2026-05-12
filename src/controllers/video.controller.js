@@ -204,22 +204,27 @@ const publishAVideo = asyncHandler(async (req, res) => {
     owner: req.user?._id,
   });
 
-  if (!video) {
+  const createdVideo = await Video.findById(video._id).select(
+    "-thumbnail.public_id -videoFile.public_id"
+  );
+
+  if (!createdVideo) {
     throw new ApiError(500, "Something went wrong while publishing the video");
   }
 
   res
     .status(201)
-    .json(new ApiResponse(201, video, "Video published successfully"));
+    .json(new ApiResponse(201, createdVideo, "Video published successfully"));
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: get video by id
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid Video id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid Video id");
+  // }
 
   const pipeline = [];
 
@@ -385,9 +390,10 @@ const updateVideo = asyncHandler(async (req, res) => {
   //TODO: update video details like title, description, thumbnail
   const { title, description } = req.body;
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid Video Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid Video Id");
+  // }
 
   // validation (used before implementing zod)
   // if ([title, description].some((field) => field.trim() === "")) {
@@ -435,7 +441,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  );
+  ).select("-thumbnail.public_id -videoFile.public_id");
 
   if (!updatedVideo) {
     await deleteFromCloudinary(thumbnail.public_id);
@@ -459,9 +465,11 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: delete video
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid Video Id");
-  }
+
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid Video Id");
+  // }
 
   const deletedVid = await Video.findOneAndDelete({
     _id: videoId,
@@ -507,9 +515,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid Video Id");
-  }
+  // validation (used before implementing zod)
+  // if (!isValidObjectId(videoId)) {
+  //   throw new ApiError(400, "Invalid Video Id");
+  // }
 
   const video = await Video.findOneAndUpdate(
     {

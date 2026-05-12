@@ -16,12 +16,12 @@ const router = Router();
 
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route("/").post(validate(playlistBodySchema), createPlaylist);
+router.route("/").post(validate({ body: playlistBodySchema }), createPlaylist);
 
 router
   .route("/:playlistId")
   .get(getPlaylistById)
-  .patch(validate(playlistBodySchema), updatePlaylist)
+  .patch(validate({ body: playlistBodySchema }), updatePlaylist)
   .delete(deletePlaylist);
 
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);

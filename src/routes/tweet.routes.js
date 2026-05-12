@@ -12,11 +12,11 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route("/").post(validate(tweetContentSchema), createTweet);
+router.route("/").post(validate({ body: tweetContentSchema }), createTweet);
 router.route("/user/:userId").get(getUserTweets);
 router
   .route("/:tweetId")
-  .patch(validate(tweetContentSchema), updateTweet)
+  .patch(validate({ body: tweetContentSchema }), updateTweet)
   .delete(deleteTweet);
 
 export default router;

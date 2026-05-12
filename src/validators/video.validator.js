@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { objectIdSchema } from "./objectId.validator.js";
 
 const videoBodySchema = z.object({
   title: z
@@ -12,4 +13,8 @@ const videoBodySchema = z.object({
     .max(300, "Description should be not more than 300 characters "),
 });
 
-export { videoBodySchema };
+const videoIdParamSchema = z.object({
+  videoId: objectIdSchema,
+});
+
+export { videoBodySchema, videoIdParamSchema };

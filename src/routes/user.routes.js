@@ -28,11 +28,11 @@ router.route("/register").post(
     { name: "avatar", maxCount: 1 },
     { name: "coverImage", maxCount: 1 },
   ]),
-  validate(RegisterSchema),
+  validate({ body: RegisterSchema }),
   registerUser
 );
 
-router.route("/login").post(validate(LoginSchema), loginUser);
+router.route("/login").post(validate({ body: LoginSchema }), loginUser);
 
 // Secured Routes
 router.route("/logout").post(verifyJWT, logoutUser);
@@ -42,11 +42,15 @@ router.route("/me").get(verifyJWT, getCurrentUser);
 
 router
   .route("/change-password")
-  .post(verifyJWT, validate(ChangePassSchema), changeCurrentPassword);
+  .post(verifyJWT, validate({ body: ChangePassSchema }), changeCurrentPassword);
 
 router
   .route("/update-account")
-  .patch(verifyJWT, validate(UpdateAccountSchema), updateAccountDetails);
+  .patch(
+    verifyJWT,
+    validate({ body: UpdateAccountSchema }),
+    updateAccountDetails
+  );
 
 router
   .route("/update-avatar")

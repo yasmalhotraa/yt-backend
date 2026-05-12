@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.middleware.js";
-import { videoBodySchema } from "../validators/video.validator.js";
+import {
+  videoBodySchema,
+  videoIdParamSchema,
+} from "../validators/video.validator.js";
 import {
   deleteVideo,
   getAllVideos,
@@ -29,16 +32,22 @@ router
         maxCount: 1,
       },
     ]),
-    validate(videoBodySchema),
+    validate({ body: videoBodySchema }),
     publishAVideo
   );
 
 router
   .route("/:videoId")
-  .get(getVideoById)
-  .delete(deleteVideo)
-  .patch(upload.single("thumbnail"), validate(videoBodySchema), updateVideo);
+  .get(validate({ params: videoIdParamSchema }), getVideoById)
+  .delete(validate({ params: videoIdParamSchema }), deleteVideo)
+  .patch(
+    upload.single("thumbnail"),
+    validate({ body: videoBodySchema, params: videoIdParamSchema }),
+    updateVideo
+  );
 
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router
+  .route("/toggle/publish/:videoId")
+  .patch(validate({ params: videoIdParamSchema }), togglePublishStatus);
 
 export default router;
