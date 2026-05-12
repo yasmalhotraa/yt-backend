@@ -3,6 +3,7 @@ import { validate } from "../middlewares/validate.middleware.js";
 import { commentIdParamSchema } from "../validators/comment.validator.js";
 import { tweetIdParamSchema } from "../validators/tweet.validator.js";
 import { videoIdParamSchema } from "../validators/video.validator.js";
+import { paginationQuerySchema } from "../validators/pagination.validator.js";
 import {
   getLikedVideos,
   toggleCommentLike,
@@ -23,6 +24,8 @@ router
 router
   .route("/toggle/t/:tweetId")
   .post(validate({ params: tweetIdParamSchema }), toggleTweetLike);
-router.route("/videos").get(getLikedVideos);
+router
+  .route("/videos")
+  .get(validate({ query: paginationQuerySchema }), getLikedVideos);
 
 export default router;

@@ -52,7 +52,7 @@ const validate = ({
           }))
         );
       } else {
-        req.query = result.data;
+        Object.assign(req.query, result.data);
       }
     }
 

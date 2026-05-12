@@ -16,9 +16,9 @@ const getVideoComments = asyncHandler(async (req, res) => {
   //   throw new ApiError(400, "Invalid video id");
   // }
 
-  if (isNaN(parseInt(page)) || isNaN(parseInt(limit))) {
-    throw new ApiError(400, "please provide a valid and page and limit");
-  }
+  // if (isNaN(parseInt(page)) || isNaN(parseInt(limit))) {
+  //   throw new ApiError(400, "please provide a valid and page and limit");
+  // }
 
   const aggregate = Comment.aggregate([
     {
@@ -77,8 +77,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
   ]);
 
   const options = {
-    page: parseInt(page),
-    limit: parseInt(limit),
+    page,
+    limit,
   };
 
   const result = await Comment.aggregatePaginate(aggregate, options);
