@@ -424,9 +424,10 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
   console.log(`Username : ${username}`);
 
-  if (!username?.trim()) {
-    throw new ApiError(400, "Username is missing");
-  }
+  // validation (used before implementing zod)
+  // if (!username?.trim()) {
+  //   throw new ApiError(400, "Username is missing");
+  // }
 
   const channel = await User.aggregate([
     {

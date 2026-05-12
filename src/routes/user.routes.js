@@ -5,6 +5,7 @@ import {
   LoginSchema,
   ChangePassSchema,
   UpdateAccountSchema,
+  channelProfileParamSchema,
 } from "../validators/user.validator.js";
 import {
   changeCurrentPassword,
@@ -60,7 +61,13 @@ router
   .route("/update-cover")
   .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
 
-router.route("/channel/:username").get(verifyJWT, getUserChannelProfile);
+router
+  .route("/channel/:username")
+  .get(
+    verifyJWT,
+    validate({ params: channelProfileParamSchema }),
+    getUserChannelProfile
+  );
 
 router.route("/watch-history").get(verifyJWT, getWatchHistory);
 

@@ -83,4 +83,17 @@ const UpdateAccountSchema = z
     message: "At least one field is required to update account",
   });
 
-export { RegisterSchema, LoginSchema, ChangePassSchema, UpdateAccountSchema };
+const channelProfileParamSchema = z.object({
+  username: z
+    .string({ error: "Username is required" })
+    .trim()
+    .min(3, "Username is required"),
+});
+
+export {
+  RegisterSchema,
+  LoginSchema,
+  ChangePassSchema,
+  UpdateAccountSchema,
+  channelProfileParamSchema,
+};
