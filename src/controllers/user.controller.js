@@ -8,7 +8,7 @@ import {
 } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import redisClient from "../db/redis.js";
+import { getRedisClient } from "../db/redis.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -424,6 +424,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
   // checking data inside redis first
+
+  const redisClient = getRedisClient();
+
   const cacheKey = `channel:profile:${username}:${req.user?._id}`;
 
   const cachedChannelProfile = await redisClient.get(cacheKey);

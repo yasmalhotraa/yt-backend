@@ -6,7 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Comment } from "../models/comment.model.js";
-import redisClient from "../db/redis.js";
+import { getRedisClient } from "../db/redis.js";
 
 const getChannelStats = asyncHandler(async (req, res) => {
   // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
@@ -17,6 +17,8 @@ const getChannelStats = asyncHandler(async (req, res) => {
   // total comments
 
   const userId = new mongoose.Types.ObjectId(req.user._id);
+
+  const redisClient = getRedisClient();
 
   const cacheKey = `channel:stats:${req.user._id}`;
 

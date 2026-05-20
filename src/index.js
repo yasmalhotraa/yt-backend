@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/mongo.js";
 import { app } from "./app.js";
 import { cloudinaryConfiguration } from "./utils/cloudinary.js";
-import redisClient, { connectRedis } from "./db/redis.js";
+import { connectRedis, getRedisClient } from "./db/redis.js";
 
 dotenv.config();
 
@@ -30,6 +30,8 @@ connectDB()
   });
 
 process.on("SIGINT", async () => {
+  const redisClient = getRedisClient();
+
   await redisClient.quit();
   process.exit(0);
 });
