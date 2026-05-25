@@ -36,7 +36,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from frontend
   const { fullName, email, username, password } = req.body;
-  console.log("email: ", email);
 
   // validation (used before implementing zod)
   // if (
@@ -108,8 +107,6 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   // req body -> data
   const { email, username, password } = req.body;
-  console.log("user login email is ", email);
-  console.log("user login username is ", username);
 
   // username or email validation (used before implementing zod)
   // if (!username && !email) {
@@ -432,7 +429,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   const cachedChannelProfile = await redisClient.get(cacheKey);
 
   if (cachedChannelProfile) {
-    console.log("Cache hit");
     return res
       .status(200)
       .json(
@@ -448,8 +444,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   // if (!username?.trim()) {
   //   throw new ApiError(400, "Username is missing");
   // }
-
-  console.log("Cache miss");
 
   const channel = await User.aggregate([
     {

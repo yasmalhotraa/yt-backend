@@ -50,7 +50,11 @@ router.route("/me").get(verifyJWT, getCurrentUser);
 
 router
   .route("/change-password")
-  .post(verifyJWT, validate({ body: ChangePassSchema }), changeCurrentPassword);
+  .patch(
+    verifyJWT,
+    validate({ body: ChangePassSchema }),
+    changeCurrentPassword
+  );
 
 router
   .route("/update-account")

@@ -25,7 +25,6 @@ const getChannelStats = asyncHandler(async (req, res) => {
   const cachedChannelStats = await redisClient.get(cacheKey);
 
   if (cachedChannelStats) {
-    console.log("Cache hit");
     return res
       .status(200)
       .json(
@@ -36,8 +35,6 @@ const getChannelStats = asyncHandler(async (req, res) => {
         )
       );
   }
-
-  console.log("Cache miss");
 
   // Get total views and videos
   const videoStats = await Video.aggregate([
