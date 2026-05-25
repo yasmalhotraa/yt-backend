@@ -196,11 +196,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 // new acces token when old one expires
 const refreshAccessToken = asyncHandler(async (req, res) => {
+  // cookie is only accessible on web not on mobile of desktop apps
   const incomingRefreshToken =
-    req.cookies?.refreshToken || req.body.refreshToken;
+    req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized request");
+    throw new ApiError(401, "unathorized request");
   }
 
   try {
@@ -212,14 +213,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const user = await User.findById(decodedToken?._id);
 
     if (!user) {
-      throw new ApiError(401, "Invalid Refresh Token");
+      throw new ApiError(401, "Invalid refresh token!");
     }
 
     if (incomingRefreshToken !== user?.refreshToken) {
       throw new ApiError(401, "Refresh token is expired or used");
     }
 
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
     const options = {
@@ -234,8 +235,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
-          "Access token refreshed successfully"
+          { accessToken, newRefreshToken },
+          "Acess token refreshed"
         )
       );
   } catch (error) {
